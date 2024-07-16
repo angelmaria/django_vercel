@@ -1,0 +1,59 @@
+/* styles.css */
+.section-background {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    color: #000;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    color: #6c757d;
+}
+
+.card-icon {
+    width: 30px;
+    height: 30px;
+    margin-left: auto;
+}
+
+.price-tag {
+    font-weight: bold;
+    color: #05737d;
+}
+
+.navbar-brand img {
+    margin-right: 10px;
+}
+.section-background {
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+ul.navbar-nav li {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+.translate-price {
+    transform: translate(-190%, -30%) !important;
+}
+.login a{
+    border-radius: 5px;
+    background-color: darkcyan;
+    color: white !important;
+    padding-left: 12px;
+    padding-right: 12px;
+    border: 1px solid lightgrey;
+}
+.login a:hover {
+    background-color: white;
+    color: darkcyan !important;
+    border: 1px solid lightgrey;
+    padding-left:12px;
+    padding-right: 12px;
+}
