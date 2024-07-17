@@ -7,8 +7,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EnrollmentForm, StudentForm, TeacherForm, InstrumentForm, ClassPackForm, PriceForm
 from django import forms
 from django.db import connection
-from django.db import IntegrityError
-from django.core.exceptions import ValidationError
 
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
