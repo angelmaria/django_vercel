@@ -10,10 +10,6 @@ from django.db import connection
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
-
-delete_url = "api/confirm_delete.html"
-edit_pack = "api/edit_class_pack.html"
-
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
@@ -78,14 +74,9 @@ def home(request):
 def create_enrollment(request):
     if request.method == 'POST':
         form = EnrollmentForm(request.POST)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except IntegrityError as e:
-            print(f"Error de integridad al crear la inscripción: {e}")
-        except Exception as e:
-            print(f"Error al crear la inscripción: {e}")
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = EnrollmentForm()
 
@@ -95,16 +86,9 @@ def create_enrollment(request):
 def create_student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except IntegrityError as e:
-            print(f"Error de integridad al crear el estudiante: {e}")
-            form.add_error(None, "Error de integridad al guardar el estudiante.")
-        except Exception as e:
-            print(f"Error al crear el estudiante: {e}")
-            form.add_error(None, "Error al guardar el estudiante.")
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = StudentForm()
 
@@ -117,12 +101,8 @@ def create_instrument(request):
     if request.method == 'POST':
         form = InstrumentForm(request.POST)
         if form.is_valid():
-            try:
-                form.save()
-                return redirect('home')
-            except IntegrityError as e:
-                print(f"Error de integridad al crear el instrumento: {e}")
-                form.add_error(None, "Error de integridad al guardar el instrumento.")
+            form.save()
+            return redirect('home')
     else:
         form = InstrumentForm()
 
@@ -134,15 +114,9 @@ def create_instrument(request):
 def create_teacher(request):
     if request.method == 'POST':
         form = TeacherForm(request.POST)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except IntegrityError as e:
-            # Aquí puedes personalizar el manejo de la excepción según tus necesidades
-            print(f"Error al guardar el profesor: {e}")
-            form.add_error(None, 'Error al guardar el profesor. Por favor, verifica los datos e intenta nuevamente.')
-
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = TeacherForm()
 
@@ -151,17 +125,11 @@ def create_teacher(request):
     }
     return render(request, 'api/create_teacher.html', context)
 
-
 def delete_teacher(request, teacher_id):
     teacher = get_object_or_404(Teacher, id=teacher_id)
     if request.method == 'POST':
-        try:
-            teacher.delete()
-            return redirect('home')
-        except IntegrityError as e:
-            print(f"Error al eliminar el profesor: {e}")
-           #redirige a una página de error
-            return redirect('error_page')  # Reemplaza 'error_page' con el nombre de tu vista de error
+        teacher.delete()
+        return redirect('home')
 
     context = {
         'object_type': 'profesor',
@@ -196,15 +164,9 @@ def edit_teacher(request, teacher_id):
     
     if request.method == 'POST':
         form = TeacherForm(request.POST, instance=teacher)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except IntegrityError as e:
-            # Manejo de errores de integridad
-            print(f"Error al editar el profesor: {e}")
-            form.add_error(None, 'Error al guardar los cambios. Por favor, verifica los datos e intenta nuevamente.')
-    
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = TeacherForm(instance=teacher)
     
@@ -217,14 +179,9 @@ def edit_teacher(request, teacher_id):
 def create_class_pack(request):
     if request.method == 'POST':
         form = ClassPackForm(request.POST)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except Exception as e:
-            # Aquí puedes manejar el error como desees
-            print(f"Error al crear el paquete de clases: {e}")
-            form.add_error(None, 'Error al guardar el paquete de clases. Por favor, verifica los datos e intenta nuevamente.')
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = ClassPackForm()
     
@@ -234,18 +191,9 @@ def edit_instrument(request, instrument_id):
     instrument = get_object_or_404(Instrument, id=instrument_id)
     if request.method == 'POST':
         form = InstrumentForm(request.POST, instance=instrument)
-        try:
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        except ValidationError as e:
-            # Se maneja el error de validación específico
-            print(f"Error de validación al editar el instrumento: {e}")
-            form.add_error(None, str(e))
-        except Exception as e:
-            # Aquí puedes manejar otros tipos de excepciones
-            print(f"Error al editar el instrumento: {e}")
-            form.add_error(None, 'Error al guardar los cambios. Por favor, verifica los datos e intenta nuevamente.')
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = InstrumentForm(instance=instrument)
     
@@ -253,59 +201,27 @@ def edit_instrument(request, instrument_id):
 
 def edit_class_pack(request, pk):
     class_pack = get_object_or_404(ClassPack, pk=pk)
-    
     if request.method == 'POST':
-        try:
-            form = ClassPackForm(request.POST, instance=class_pack)
-            if form.is_valid():
-                # Validar que no se seleccionen más de 4 instrumentos
-                selected_instruments = form.cleaned_data['instruments']
-                if len(selected_instruments) > 4:
-                    raise ValueError("No se permiten más de 3 instrumentos en un paquete de clases.")
-                
-                # Guardar el formulario si es válido
-                form.save()
-                
-                return redirect('home')
-        
-        except ValueError as ve:
-            # Manejar el error específico de violación de regla de negocio
-            form = ClassPackForm(instance=class_pack)
-            context = {
-                'form': form,
-                'error_message': str(ve)
-            }
-            return render(request, edit_pack, context)
-        
-        except Exception as e:
-            # Manejar  excepciones genéricas
-            form = ClassPackForm(instance=class_pack)
-            context = {
-                'form': form,
-                'error_message': f"Error al guardar el formulario: {str(e)}"
-            }
-            return render(request, edit_pack , context)
-
+        form = ClassPackForm(request.POST, instance=class_pack)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
     else:
         form = ClassPackForm(instance=class_pack)
-
     context = {
         'form': form,
     }
-    return render(request, edit_pack, context)
+    return render(request, 'api/edit_class_pack.html', context)
 
 def edit_student(request, student_id):
-    try:
-        student = get_object_or_404(Student, id=student_id)
-        if request.method == 'POST':
-            form = StudentForm(request.POST, instance=student)
-            if form.is_valid():
-                form.save()
-                return redirect('home')
-        else:
-            form = StudentForm(instance=student)
-    except Student.DoesNotExist:
-        return render(request, 'api/error.html', {'error_message': 'Estudiante no encontrado'})
+    student = get_object_or_404(Student, id=student_id)
+    if request.method == 'POST':
+        form = StudentForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = StudentForm(instance=student)
     return render(request, 'api/edit_student.html', {'form': form})
 
 def delete_class_pack(request, pk):
